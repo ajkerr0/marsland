@@ -31,10 +31,10 @@ class Perceptron:
         self.bias = bias
         
     def recall(self, input_):
-        return np.where(np.dot(input_, self.w)>0., 1,0)
+        return np.where(np.dot(input_, self.w)>0.,1,0)
         
     def train(self, n=10):
-        """Train the neural net for 'n' iterations are until the output is perfect.
+        """Train the neural net for 'n' iterations or until the output is perfect.
         
         Keywords:
             n (int): Iteration counter.  Default is 10."""
@@ -75,6 +75,6 @@ lor.train()
 land = Perceptron(inputs, ANDtargets)
 land.train()
 
-#seems to have difficulty with XOR logic...now we know why
+#has difficulty with XOR logic...now we know why
 lxor = Perceptron(inputs, XORtargets)
 lxor.train()

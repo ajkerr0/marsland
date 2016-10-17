@@ -40,9 +40,9 @@ class Perceptron:
             n (int): Iteration counter.  Default is 10."""
         
         for count in range(n):
-            for point, t in zip(self.training, self.target):
-                act = self.recall(point)
-                self.w += -self.lrate*np.dot(np.transpose(point)[:,None], (act-t)[:,None])
+
+            act = self.recall(self.training)
+            self.w += -self.lrate*np.dot(np.transpose(self.training), act-self.target)
             output = self.recall(self.training)
             print('Iteration: {0}'.format(count))
             print(self.w)
@@ -69,12 +69,15 @@ ORtargets = [[0],[1],[1],[1]]
 ANDtargets = [[0],[0],[0],[1]]
 XORtargets = [[0],[1],[1],[0]]
 
-lor = Perceptron(inputs, ORtargets)
-lor.train()
-
-land = Perceptron(inputs, ANDtargets)
-land.train()
-
-#seems to have difficulty with XOR logic...now we know why
-lxor = Perceptron(inputs, XORtargets)
-lxor.train()
+if __name__ == "__main__":
+    
+    lor = Perceptron(inputs, ORtargets)
+    lor.train()
+    
+    land = Perceptron(inputs, ANDtargets)
+    land.train()
+    
+    #seems to have difficulty with XOR logic...now we know why
+    lxor = Perceptron(inputs, XORtargets)
+    lxor.train()
+    

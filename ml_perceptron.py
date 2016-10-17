@@ -1,5 +1,6 @@
 """
 
+Borrowed from Marsland's code
 
 @author: Alex Kerr
 """
@@ -58,7 +59,7 @@ class MLP:
         return self.threshold(np.dot(self.hidden, self.w2))
         
             
-    def train(self, lrate=.25, niter=100):
+    def train(self, lrate=.25, niter=100, print_err=True):
         """Train the neural net."""
         
         #starting momentum
@@ -70,7 +71,7 @@ class MLP:
             outputs = self.forward(self.training)
             
             error = .5*np.sum((outputs-self.target)**2)
-            if n%100 == 0:
+            if n%100 == 0 and print_err:
                 print("Iteration: {0}".format(n))
                 print("Error: {0}".format(error))
                 
@@ -83,6 +84,31 @@ class MLP:
             self.w1 += -dw1
             self.w2 += -dw2
             
+    def estop(self, v, vtarget, lrate=.25, niter=100):
+        """Train the neural net but stop when the validation set's error stops to decrease."""
+        
+        v = np.concatenate((v, -np.ones((len(v), self.tbias))), axis=1)
+        vtarget = np.array(vtarget)
+        
+        #start with dummy errors
+        old_verr1 = 1e5 + 2.
+        old_verr2 = 1e5 + 1.
+        new_verr = 1e5
+        
+        count = 0
+        while ((old_verr1 - new_verr) > 1e-3 or (old_verr2 - old_verr1) > 1e-3):
+            self.train(lrate, niter, print_err=False)
+            old_verr2, old_verr1 = old_verr1, new_verr
+            vout = self.forward(v)
+            new_verr = .5*np.sum((vtarget-vout)**2)
+            count += 1
+            
+        print("Stopped")
+        print(new_verr)
+        print(old_verr1)
+        print(old_verr2)
+            
+            
             
 #testing out       
 if __name__ == "__main__":
@@ -92,13 +118,22 @@ if __name__ == "__main__":
     x = x.T
     t = t.T
     
-    #plt.plot(x,t)
+    x = (x - x.mean(axis=0))/x.var(axis=0)
+    t = (t - t.mean(axis=0))/t.var(axis=0)
+    
+#    plt.plot(x,t)
+#    plt.show()
     
     train, traint = x[0::2,:], t[0::2,:]
     test, testt = x[1::4,:], t[1::4,:]
     valid, validt = x[3::4,:], t[3::4,:]
     
+    print("Naive training")
     net = MLP(train, traint, 3)
-    net.train(niter=101)            
+    net.train()
+
+    print("Early stopping")
+    net = MLP(train, traint, 3)
+    net.estop(valid, validt)       
         
         

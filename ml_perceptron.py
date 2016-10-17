@@ -1,5 +1,6 @@
 """
 
+Multi-layer Perceptron code ala Chapter 4 of Marsland's book
 Borrowed from Marsland's code
 
 @author: Alex Kerr
@@ -45,6 +46,7 @@ class MLP:
                 return self.beta*(outputs-self.target)*outputs*(1.-outputs)
         self.threshold = threshold
         self.deltao = deltao
+        self.outtype = outtype  #for train_seq
             
     def forward(self, inputs):
         """Return the forward progress of the neural net."""
@@ -84,6 +86,44 @@ class MLP:
             self.w1 += -dw1
             self.w2 += -dw2
             
+    def train_seq(self, lrate=.25, niter=100):
+        """Train the neural net sequential (vs batch).
+        Doesn't fit rest of class, for Problem 4.5."""
+        
+        inputs = self.training
+        targets = self.target
+        counts = np.arange(self.training.shape[0])
+        change = np.copy(counts)
+        
+        for n in range(niter):
+            
+            
+            if self.outtype == 'linear':
+                def deltao_seq(output, t):
+                    return output-t
+            elif self.outtype == 'logistic':
+                def deltao_seq(output, t):
+                    return self.beta(output-t)*output*(1.-output) 
+            
+            for count, point, target in zip(counts, inputs, targets):
+                
+                hidden = np.dot(point, self.w1)
+                hidden = 1./(1. + np.exp(-self.beta*hidden))
+                hidden = np.append(hidden, [-1]*self.hbias)
+                output = self.threshold(np.dot(hidden, self.w2))
+                deltao = deltao_seq(output, target)
+                deltah = hidden*self.beta*(1. - hidden)*(np.dot(deltao,np.transpose(self.w2)))
+                
+                self.w1 += -lrate*np.dot(np.transpose(point).reshape((len(np.transpose(point)), 1)), 
+                                         deltah[:-1].reshape((1,len(deltah)-1)))
+                self.w2 += -lrate*np.dot(np.transpose(hidden).reshape((len(np.transpose(hidden)),1)), 
+                                         deltao.reshape((1,len(deltao))))
+                
+            np.random.shuffle(change)
+            inputs = inputs[change,:]
+            targets = targets[change,:]
+                
+            
     def estop(self, v, vtarget, lrate=.25, niter=100):
         """Train the neural net but stop when the validation set's error stops to decrease."""
         
@@ -108,8 +148,6 @@ class MLP:
         print(old_verr1)
         print(old_verr2)
             
-            
-            
 #testing out       
 if __name__ == "__main__":
     
@@ -130,7 +168,8 @@ if __name__ == "__main__":
     
     print("Naive training")
     net = MLP(train, traint, 3)
-    net.train()
+#    net.train()
+    net.train_seq()
 
     print("Early stopping")
     net = MLP(train, traint, 3)

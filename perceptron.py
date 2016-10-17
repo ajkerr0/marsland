@@ -31,10 +31,10 @@ class Perceptron:
         self.bias = bias
         
     def recall(self, input_):
-        return np.where(np.dot(input_, self.w)>0., 1,0)
+        return np.where(np.dot(input_, self.w)>0.,1,0)
         
     def train(self, n=10):
-        """Train the neural net for 'n' iterations are until the output is perfect.
+        """Train the neural net for 'n' iterations or until the output is perfect.
         
         Keywords:
             n (int): Iteration counter.  Default is 10."""
@@ -62,14 +62,14 @@ class Perceptron:
     def output(self, input_):
         return self.recall(np.concatenate(input_,-np.ones((len(input_), self.bias))))
 
-#training logic gates as an example
-#of course it doesn't make sense
-inputs = [[0,0], [1,0], [0,1], [1,1]]
-ORtargets = [[0],[1],[1],[1]]
-ANDtargets = [[0],[0],[0],[1]]
-XORtargets = [[0],[1],[1],[0]]
-
 if __name__ == "__main__":
+    
+    #training logic gates as an example
+    #of course it doesn't make sense
+    inputs = [[0,0], [1,0], [0,1], [1,1]]
+    ORtargets = [[0],[1],[1],[1]]
+    ANDtargets = [[0],[0],[0],[1]]
+    XORtargets = [[0],[1],[1],[0]]
     
     lor = Perceptron(inputs, ORtargets)
     lor.train()
@@ -77,7 +77,6 @@ if __name__ == "__main__":
     land = Perceptron(inputs, ANDtargets)
     land.train()
     
-    #seems to have difficulty with XOR logic...now we know why
+    #has difficulty with XOR logic...now we know why
     lxor = Perceptron(inputs, XORtargets)
     lxor.train()
-    

@@ -97,7 +97,6 @@ class MLP:
         
         for n in range(niter):
             
-            
             if self.outtype == 'linear':
                 def deltao_seq(output, t):
                     return output-t
@@ -159,8 +158,8 @@ if __name__ == "__main__":
     x = (x - x.mean(axis=0))/x.var(axis=0)
     t = (t - t.mean(axis=0))/t.var(axis=0)
     
-#    plt.plot(x,t)
-#    plt.show()
+    plt.plot(x,t)
+    plt.show()
     
     train, traint = x[0::2,:], t[0::2,:]
     test, testt = x[1::4,:], t[1::4,:]

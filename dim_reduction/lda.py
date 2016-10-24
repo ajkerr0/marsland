@@ -39,7 +39,7 @@ def lda(data, labels, redDim):
     return newData,w
 
 #plot vanilla iris data
-iris = np.loadtxt("./iris.data", delimiter=',')
+iris = np.loadtxt("../data/iris.data", delimiter=',')
 data, labels = iris[:,:-1], iris[:,-1].astype(int)
 
 ind1, ind2, ind3 = np.where(labels==0)[0], np.where(labels==1)[0], np.where(labels==2)[0]

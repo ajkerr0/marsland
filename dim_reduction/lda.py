@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 def lda(data, labels, redDim):
     
     data = np.array(data)
-#    data -= data.mean(axis=0)
     
     #covariance matrix
     #rows corresponds to variable, columns to data points for numpy function
@@ -38,17 +37,28 @@ def lda(data, labels, redDim):
     w = vec[:,:redDim]
     newData = np.dot(data,w)
     return newData,w
-    
+
+#plot vanilla iris data
 iris = np.loadtxt("./iris.data", delimiter=',')
 data, labels = iris[:,:-1], iris[:,-1].astype(int)
 
-#print(data, labels)
-    
-#data = np.array([[0.1,0.1],[0.2,0.2],[0.3,0.3],[0.35,0.3],[0.4,0.4],[0.6,0.4],[0.7,0.45],[0.75,0.4],[0.8,0.35]])
-#labels = np.array([0,0,0,0,0,1,1,1,1])
-newData,w = lda(data,labels,3)
-print(w)
-plt.plot(data[:,0],data[:,1],'o',newData[:,0],newData[:,0],'.')
+ind1, ind2, ind3 = np.where(labels==0)[0], np.where(labels==1)[0], np.where(labels==2)[0]
+
+plt.figure()
+plt.plot(data[ind1,0], data[ind1,1], 'bo',
+         data[ind2,0], data[ind2,1], 'r^',
+         data[ind3,0], data[ind3,1], 'gv')
+         
+plt.show()
+         
+#perform lda on iris data
+newData,w = lda(data, labels,2)
+
+plt.figure()
+plt.plot(newData[ind1,0], newData[ind1,1], 'bo',
+         newData[ind2,0], newData[ind2,1], 'r^',
+         newData[ind3,0], newData[ind3,1], 'gv')
+
 plt.show()
 
         

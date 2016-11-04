@@ -36,16 +36,15 @@ class Evolution:
         
         fitness = 10*fitness/fitness.max()
         
-        j = 0
-        while np.round(fitness[j]) < 1:
-            j += 1
-            
-        newpop = np.kron(np.ones((np.round(fitness[j]),1)), pop[j,:])
+        #build pool of fit parents
+        #initialize pool with a dummy array
+        newpop = np.zeros((1, pop.shape[1]))
         
-        #do the same for the rest of the population
-        for i in range(j+1, pop.shape[0]):
+        for i in range(pop.shape[0]):
             if np.round(fitness[i]) >= 1:
                 newpop = np.concatenate((newpop, np.kron(np.ones((np.round(fitness[i]),1)), pop[i,:])), axis=0)
+        
+        newpop = np.delete(newpop, 0, 0)
                 
         newpop = newpop.astype(int)
         

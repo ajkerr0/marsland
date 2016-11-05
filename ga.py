@@ -30,22 +30,20 @@ class Evolution:
         """Return the parents of the next generation
         using fitness proportional selection."""
         
-        #scale the fitnesses such that the highest value is 10
+        #scale the fitnesses such that the highest value is the population size
+            #this guarantees there will be enough random samples
         #ignore individuals with new fitness < 1 as parents for new generation
         #add number of copies of the individuals based on their new fitness to be randomly selected
         
-        fitness = 10*fitness/fitness.max()
+        fitness = fitness/np.sum(fitness)
+        fitness = pop.shape[0]*fitness/fitness.max()
         
-        #build pool of fit parents
-        #initialize pool with a dummy array
-        newpop = np.zeros((1, pop.shape[1]))
-        
+        newpop = []
         for i in range(pop.shape[0]):
             if np.round(fitness[i]) >= 1:
-                newpop = np.concatenate((newpop, np.kron(np.ones((np.round(fitness[i]),1)), pop[i,:])), axis=0)
+                newpop.extend(np.kron(np.ones((np.round(fitness[i]),1)), pop[i,:]))
         
-        newpop = np.delete(newpop, 0, 0)
-                
+        newpop = np.asarray(newpop)     
         newpop = newpop.astype(int)
         
         indices = np.arange(newpop.shape[0])
@@ -120,9 +118,10 @@ class Evolution:
             self.pop = newpop
             bestfit[i] = np.max(fitness)
             
-        plt.plot(np.arange(1,self.nepoch+1), bestfit, '-kx')
+        plt.plot(np.arange(1,self.nepoch+1), bestfit, '-rx')
+        plt.show()
     
-def fourpeaks(pop, T=.20):
+def fourpeaks(pop, T=.15):
     
     T = np.ceil(pop.shape[0]*T)
     
@@ -149,8 +148,7 @@ def fourpeaks(pop, T=.20):
             
     return fitness
     
-a = Evolution(20,20,fourpeaks)
+a = Evolution(20,50,fourpeaks, nepoch=100)
 
 a.evolve()
-    
     
